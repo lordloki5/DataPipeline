@@ -37,10 +37,26 @@ public class InsertSectoralIndices {
 
                 // Step 3: Insert NSE sectoral indices
                 String[] nseSectoralIndices = {
-                        "NIFTY AUTO", "NIFTY BANK", "NIFTY ENERGY", "NIFTY FINANCIAL SERVICES",
-                        "NIFTY FMCG", "NIFTY IT", "NIFTY MEDIA", "NIFTY METAL", "NIFTY PHARMA",
-                        "NIFTY PSU BANK", "NIFTY REALTY", "NIFTY PRIVATE BANK", "NIFTY HEALTHCARE INDEX",
-                        "NIFTY CONSUMER DURABLES", "NIFTY OIL & GAS"
+                        "NIFTY AUTO",
+                        "NIFTY BANK",
+                        "NIFTY ENERGY",
+                        "NIFTY FINANCIAL SERVICES",
+                        "NIFTY FINANCIAL SERVICES 25/50",
+                        "NIFTY FMCG",
+                        "NIFTY IT",
+                        "NIFTY MEDIA",
+                        "NIFTY METAL",
+                        "NIFTY PHARMA",
+                        "NIFTY PSU BANK",
+                        "NIFTY REALTY",
+                        "NIFTY PRIVATE BANK",
+                        "NIFTY HEALTHCARE INDEX",
+                        "NIFTY CONSUMER DURABLES",
+                        "NIFTY OIL & GAS",
+                        "NIFTY MIDSMALL HEALTHCARE",
+                        "NIFTY FINANCIAL SERVICES EX-BANK",
+                        "NIFTY MIDSMALL FINANCIAL SERVICES",
+                        "NIFTY MIDSMALL IT & TELECOM"
                 };
 
                 for (String indexName : nseSectoralIndices) {

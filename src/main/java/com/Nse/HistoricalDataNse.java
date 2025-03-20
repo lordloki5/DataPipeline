@@ -16,13 +16,32 @@ public class HistoricalDataNse {
     static final String DEFAULT_DB_URL = "jdbc:postgresql://localhost:5432/ohcldata";
     static final String USER = "dhruvbhandari";
     static final String PASS = "";
-    private static String fromDate = "01-01-2015"; // Adjust to earliest relevant date
-    private static String toDate = "16-03-2025";   // Current date or your end date
+    private static String fromDate = "19-03-2025"; // Adjust to earliest relevant date
+    private static String toDate = "19-03-2025";   // Current date or your end date
     private static final int MAX_DAYS_PER_CALL = 350; // Less than 300 days
     // Array of index names to fetch
     private static final String[] INDEX_NAMES = {
             "NIFTY 50",
-            "NIFTY BANK"
+            "NIFTY AUTO",
+            "NIFTY BANK",
+            "NIFTY ENERGY",
+            "NIFTY FINANCIAL SERVICES",
+            "NIFTY FINANCIAL SERVICES 25/50",
+            "NIFTY FMCG",
+            "NIFTY IT",
+            "NIFTY MEDIA",
+            "NIFTY METAL",
+            "NIFTY PHARMA",
+            "NIFTY PSU BANK",
+            "NIFTY REALTY",
+            "NIFTY PRIVATE BANK",
+            "NIFTY HEALTHCARE INDEX",
+            "NIFTY CONSUMER DURABLES",
+            "NIFTY OIL & GAS",
+            "NIFTY MIDSMALL HEALTHCARE",
+            "NIFTY FINANCIAL SERVICES EX-BANK",
+            "NIFTY MIDSMALL FINANCIAL SERVICES",
+            "NIFTY MIDSMALL IT & TELECOM"
     };
 
     // Get or insert index_id for the given index_name
@@ -104,7 +123,7 @@ public class HistoricalDataNse {
                     String chunkToDate = currentEnd.format(formatter);
                     String apiUrl = String.format(
                             "https://www.nseindia.com/api/historical/indicesHistory?indexType=%s&from=%s&to=%s",
-                            indexName.replace(" ", "%20"), // Replace space with %20 for URL encoding
+                            indexName.replace(" ", "%20").replace("&", "%26"), // Replace space with %20 for URL encoding
                             chunkFromDate,
                             chunkToDate
                     );

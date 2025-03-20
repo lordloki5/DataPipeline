@@ -15,11 +15,76 @@ public class HistoricalDataBse {
     static final String DEFAULT_DB_URL = "jdbc:postgresql://localhost:5432/ohcldata";
     static final String USER = "dhruvbhandari";
     static final String PASS = "";
-    private static String fromDate = "01-01-2015";
-    private static String toDate = "17-03-2025";
+    private static String fromDate = "19-03-2025";
+    private static String toDate = "19-03-2025";
     private static final int MAX_DAYS_PER_CALL = 26; // Updated to 26 days as per BSE API limit
-    private static final String[] INDEX_NAMES = {"BSE 500"};
-    private static final String[] INDEX_KEYWORDS = {"BSE500"};
+    private static final String[] INDEX_NAMES = {"BSE 500",
+            "BSE AUTO",
+            "BSE BANKEX",
+            "BSE CAPITAL GOODS",
+            "BSE CARBONEX",
+            "BSE Commodities",
+            "BSE CONSUMER DISCRETIONARY",
+            "BSE CONSUMER DURABLES",
+            "BSE CPSE",
+            "BSE ENERGY",
+            "BSE FAST MOVING CONSUMER GOODS",
+            "BSE FINANCIAL SERVICES",
+            "BSE HEALTHCARE",
+            "BSE HOUSING INDEX",
+            "BSE INDIA INFRASTRUCTURE INDEX",
+            "BSE INDIA MANUFACTURING INDEX",
+            "BSE INDIA SECTOR LEADERS",
+            "BSE INDUSTRIALS",
+            "BSE INFORMATION TECHNOLOGY",
+            "BSE INTERNET ECONOMY",
+            "BSE METAL",
+            "BSE OIL & GAS",
+            "BSE POWER",
+            "BSE POWER & ENERGY",
+            "BSE PREMIUM CONSUMPTION",
+            "BSE PRIVATE BANKS INDEX",
+            "BSE PSU",
+            "BSE PSU BANK",
+            "BSE REALTY",
+            "BSE Services",
+            "BSE TECK",
+            "BSE Telecommunication",
+            "BSE Utilities"};
+    private static final String[] INDEX_KEYWORDS = {"BSE500" ,
+            "SI1900",
+            "SIBANK",
+            "SI0200",
+            "CARBON",
+            "SPBSCOIP",
+            "SPBSCDIP",
+            "SI0400",
+            "CPSE",
+            "SPBSENIP",
+            "SI0600",
+            "SPBSFIIP",
+            "SI0800",
+            "SPBSHOIP",
+            "INFRA",
+            "SPBIMIP",
+            "INSLDR",
+            "SPBSIDIP",
+            "SI1000",
+            "INTECO",
+            "SI1200",
+            "SI1400",
+            "SIPOWE",
+            "POWENE",
+            "PRECON",
+            "SPBSPBIP",
+            "SIBPSU",
+            "PSUBNK",
+            "SIREAL",
+            "SPBSSEIP",
+            "SIBTEC",
+            "SPBSTLIP",
+            "SPBSUTIP"
+    };
 
     private static int getOrInsertIndexId(Connection conn, String indexName, String exchange) throws Exception {
         String selectSql = "SELECT index_id FROM indices WHERE index_name = ?";
