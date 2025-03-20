@@ -1,4 +1,7 @@
-package org.example;
+package com.Nse;
+
+
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,7 +13,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class HistoricalDataNse {
-    static final String CONN_URL = "jdbc:postgresql://mlr70xcmp1.lad5559etb.tsdb.cloud.timescale.com:32285/tsdb?sslmode=require&user=tsdbadmin&password=Timescale##1234";
+    static final String DEFAULT_DB_URL = "jdbc:postgresql://localhost:5432/ohcldata";
+    static final String USER = "dhruvbhandari";
+    static final String PASS = "";
     private static String fromDate = "01-01-2015"; // Adjust to earliest relevant date
     private static String toDate = "16-03-2025";   // Current date or your end date
     private static final int MAX_DAYS_PER_CALL = 350; // Less than 300 days
@@ -47,7 +52,7 @@ public class HistoricalDataNse {
         String sql = "INSERT INTO daily_ohlc (trade_date, index_id, open_price, high_price, low_price, close_price) " +
                 "VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (index_id, trade_date) DO NOTHING";
 
-        try (Connection conn = DriverManager.getConnection(CONN_URL)) {
+        try (Connection conn = DriverManager.getConnection(DEFAULT_DB_URL, USER, PASS)) {
             conn.setAutoCommit(false);
 
             int indexId = getOrInsertIndexId(conn, data.getIndexName(), "NSE");
