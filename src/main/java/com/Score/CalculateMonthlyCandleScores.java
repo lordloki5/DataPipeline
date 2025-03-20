@@ -29,10 +29,34 @@ public class CalculateMonthlyCandleScores {
 
         @Override
         public String toString() {
-            return String.format("Date: %s, Open: %.2f, High: %.2f, Low: %.2f, Close: %.2f, Tag: %s, n1: %s, n2: %s, n3: %s, b1: %s, b2: %s, b3: %s",
+            return String.format("Date: %s, Open: %.8f, High: %.8f, Low: %.8f, Close: %.8f, Tag: %s, n1: %s, n2: %s, n3: %s, b1: %s, b2: %s, b3: %s",
                     tradeDate, open, high, low, close, tag,
                     n1 != null ? n1 : "null", n2 != null ? n2 : "null", n3 != null ? n3 : "null",
                     b1 != null ? b1 : "null", b2 != null ? b2 : "null", b3 != null ? b3 : "null");
+        }
+        public static void printNratios(List<Candle> candles) {
+            System.out.println();
+            System.out.println("--------Printing N Ratios------------");
+            System.out.println("Date,Open,High,Low,Close,Tag,n1,n2,n3");
+            for (Candle candle : candles) {
+                System.out.println(String.format(
+                        "%s,%.8f,%.8f,%.8f,%.8f,%s,%d,%d,%d",
+                        candle.tradeDate, candle.open, candle.high, candle.low, candle.close, candle.tag,
+                        candle.n1, candle.n2, candle.n3
+                ));
+            }
+        }
+        public static void printBratios(List<Candle> candles) {
+            System.out.println();
+            System.out.println("--------Printing B Ratios------------");
+            System.out.println("Date,Open,High,Low,Close,Tag,b1,b2,b3");
+            for (Candle candle : candles) {
+                System.out.println(String.format(
+                        "%s,%.8f,%.8f,%.8f,%.8f,%s,%d,%d,%d",
+                        candle.tradeDate, candle.open, candle.high, candle.low, candle.close, candle.tag,
+                         candle.b1, candle.b2, candle.b3
+                ));
+            }
         }
     }
     public static Map<String, Candle> fetchMonthlyData(int indexId, LocalDate endDate) throws SQLException {
@@ -71,9 +95,9 @@ public class CalculateMonthlyCandleScores {
                             rs.getDouble("low_price"),
                             rs.getDouble("close_price")
                     ));
-                    System.out.println("Fetched for index " + indexId + ": " + key + " -> Open: " + rs.getDouble("open_price") +
-                            ", High: " + rs.getDouble("high_price") + ", Low: " + rs.getDouble("low_price") +
-                            ", Close: " + rs.getDouble("close_price"));
+//                    System.out.println("Fetched for index " + indexId + ": " + key + " -> Open: " + rs.getDouble("open_price") +
+//                            ", High: " + rs.getDouble("high_price") + ", Low: " + rs.getDouble("low_price") +
+//                            ", Close: " + rs.getDouble("close_price"));
                 }
             }
         }
@@ -134,7 +158,7 @@ public class CalculateMonthlyCandleScores {
     }
 
     // Tag candles based on Python logic
-    public static void tagCandles(List<Candle> candles) {
+    public static void tagCandles2(List<Candle> candles) {
         String prevTag = "Bullish";
         for (int i = 0; i < candles.size(); i++) {
             Candle curr = candles.get(i);
@@ -169,7 +193,93 @@ public class CalculateMonthlyCandleScores {
             prevTag = curr.tag;
         }
     }
+    public static void tagCandles(List<Candle> candles) {
+        // Initialize previous tag as "Bullish"
+        String prevTag = "Bullish";
 
+        // Iterate over the list of candles
+        for (int i = 0; i < candles.size(); i++) {
+            Candle curr = candles.get(i);
+
+            // Mark the first candle as Bullish
+            if (i == 0) {
+                curr.tag = "Bullish";
+            } else {
+                // Get previous and current candle data
+                Candle prev = candles.get(i - 1);
+                double prevClose = prev.close;
+                double prevOpen = prev.open;
+                double currClose = curr.close;
+
+                // Case 1 - Current Candle is Green (curr_close > prev_close)
+                if (currClose > prevClose) {
+                    if (prevTag.equals("Highly Bullish") || prevTag.equals("Bullish")) {
+                        if (prevClose >= prevOpen) {  // Green candle
+                            curr.tag = "Highly Bullish";
+                        } else if (prevClose < prevOpen) {  // Red candle
+                            if (currClose > prevOpen) {
+                                curr.tag = "Highly Bullish";
+                            } else if (currClose < prevOpen) {
+                                curr.tag = "Bullish";
+                            }
+                        }
+                    } else if (prevTag.equals("Highly Bearish") || prevTag.equals("Bearish")) {
+                        if (prevClose > prevOpen) {  // Green candle
+                            curr.tag = "Bullish";
+                        } else if (prevClose <= prevOpen) {  // Red candle
+                            if (currClose > prevOpen) {
+                                curr.tag = "Bullish";
+                            } else if (currClose < prevOpen) {
+                                curr.tag = "Bearish";
+                            }
+                        }
+                    }
+                }
+                // Case 2 - Current Candle is Red (curr_close < prev_close)
+                else if (currClose < prevClose) {
+                    if (prevTag.equals("Highly Bullish") || prevTag.equals("Bullish")) {
+                        if (prevClose >= prevOpen) {  // Green candle
+                            if (currClose > prevOpen) {
+                                curr.tag = "Bullish";
+                            } else if (currClose < prevOpen) {
+                                curr.tag = "Bearish";
+                            }
+                        } else if (prevClose < prevOpen) {  // Red candle
+                            curr.tag = "Bearish";
+                        }
+                    } else if (prevTag.equals("Highly Bearish") || prevTag.equals("Bearish")) {
+                        if (prevClose > prevOpen) {  // Green candle
+                            if (currClose > prevOpen) {
+                                curr.tag = "Bearish";
+                            } else if (currClose < prevOpen) {
+                                curr.tag = "Highly Bearish";
+                            }
+                        } else if (prevClose <= prevOpen) {  // Red candle
+                            curr.tag = "Highly Bearish";
+                        }
+                    }
+                }
+                // Case 3 - Current Candle is Neutral (curr_close == prev_close)
+                else if (currClose == prevClose) {
+                    if (prevTag.equals("Highly Bullish") || prevTag.equals("Bullish")) {
+                        if (prevClose >= prevOpen) {  // Green candle
+                            curr.tag = prevTag;
+                        } else if (currClose < prevOpen) {  // Note: Using currClose here as in Python
+                            curr.tag = "Bullish";
+                        }
+                    } else if (prevTag.equals("Highly Bearish") || prevTag.equals("Bearish")) {
+                        if (prevClose < prevOpen) {  // Red candle
+                            curr.tag = "Bearish";
+                        } else if (currClose <= prevOpen) {  // Note: Using currClose here as in Python
+                            curr.tag = prevTag;
+                        }
+                    }
+                }
+            }
+            // Update prevTag to the current candle's tag
+            prevTag = curr.tag;
+        }
+    }
     // Calculate scores for n and b types with lookbacks
     public static void calculateScores(List<Candle> nCandles, List<Candle> bCandles) {
         int[] nScores = new int[nCandles.size()];
@@ -201,18 +311,18 @@ public class CalculateMonthlyCandleScores {
     public static void main(String[] args) {
         try {
             LocalDate cutoff = SCORE_DATE.withDayOfMonth(1).minusDays(1); // Last day of Feb (2025-02-28)
-            System.out.println("Cutoff date: " + cutoff);
+//            System.out.println("Cutoff date: " + cutoff);
 
             Map<String, Candle> sectoralData = fetchMonthlyData(SECTORAL_INDEX_ID, cutoff);
             Map<String, Candle> niftyData = fetchMonthlyData(NIFTY50_INDEX_ID, cutoff);
             Map<String, Candle> bse500Data = fetchMonthlyData(BSE500_INDEX_ID, cutoff);
 
-            for (Map.Entry<String, Candle> entry : sectoralData.entrySet()) {
-                System.out.println(entry.getKey() + " -> " + entry.getValue());
-            }
-            System.out.println("Sectoral data size: " + sectoralData.size());
-            System.out.println("Nifty data size: " + niftyData.size());
-            System.out.println("BSE500 data size: " + bse500Data.size());
+//            for (Map.Entry<String, Candle> entry : sectoralData.entrySet()) {
+//                System.out.println(entry.getKey() + " -> " + entry.getValue());
+//            }
+//            System.out.println("Sectoral data size: " + sectoralData.size());
+//            System.out.println("Nifty data size: " + niftyData.size());
+//            System.out.println("BSE500 data size: " + bse500Data.size());
 
             if (sectoralData.isEmpty() || niftyData.isEmpty() || bse500Data.isEmpty()) {
                 System.out.println("Insufficient data for calculation.");
@@ -238,10 +348,12 @@ public class CalculateMonthlyCandleScores {
             System.out.println("N Scores: n1=" + lastN.n1 + ", n2=" + lastN.n2 + ", n3=" + lastN.n3);
             System.out.println("B Scores: b1=" + lastB.b1 + ", b2=" + lastB.b2 + ", b3=" + lastB.b3);
 
-            System.out.println("\nN Ratio Data:");
-            nRatio.forEach(System.out::println);
-            System.out.println("\nB Ratio Data:");
-            bRatio.forEach(System.out::println);
+//            System.out.println("\nN Ratio Data:");
+//            nRatio.forEach(System.out::println);
+//            System.out.println("\nB Ratio Data:");
+//            bRatio.forEach(System.out::println);
+            Candle.printNratios(nRatio);
+            Candle.printBratios(bRatio);
 
         } catch (SQLException e) {
             System.err.println("Database error: " + e.getMessage());
